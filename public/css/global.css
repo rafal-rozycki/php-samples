@@ -1,0 +1,41 @@
+body {
+	background-color: #454955;
+	color: #ffffff;
+	font-family: Verdana,Arial,Helvetica,sans-serif;
+}
+a {
+	color: #ffffff;
+	/* text-decoration: none; */
+}
+.clear {
+	clear: both;
+}
+.alignCenter {
+	text-align:-moz-center;
+	text-align:-webkit-center;
+	//text-align: center;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+div#bodyWrapper {
+}
+div#bodyWrapper div#header {
+	margin: 10px auto 10px auto;
+	width: 1050px;
+	height: 40px;
+}
+div#bodyWrapper div#header div#left {
+	float: left;
+}
+div#bodyWrapper div#header div#right {
+	float: right;
+}
+div#bodyWrapper div#body {
+	margin-left: auto;
+	margin-right: auto;
+}
+div#bodyWrapper div#footer {
+	margin: 50px 0 10px 0;
+	font-size: 10px;
+}

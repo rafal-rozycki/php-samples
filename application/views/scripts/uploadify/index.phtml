@@ -1,0 +1,18 @@
+<script type="text/javascript" src="<?= $this->baseUrl('/uploadifyassets/swfobject.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('/uploadifyassets/jquery.uploadify.v2.1.4.min.js') ?>"></script>
+<script type="text/javascript">
+// <![CDATA[
+$(document).ready(function() {
+	$('#file_upload').uploadify({
+		'uploader'	: '<?= $this->baseUrl('/uploadifyassets/uploadify.swf') ?>',
+		'script'	: '<?= $this->baseUrl('/uploadify/upload') ?>',
+		'cancelImg'	: '<?= $this->baseUrl('/uploadifyassets/cancel.png') ?>',
+		'folder'	: '<?= $this->baseUrl('/uploads') ?>',
+		'auto'		: false
+	});
+});
+// ]]>
+</script>
+
+<input id="file_upload" type="file" name="file_upload" />
+<input type="button" value="Upload Files" onclick="$('#file_upload').uploadifyUpload();" />

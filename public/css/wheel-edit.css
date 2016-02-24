@@ -1,0 +1,137 @@
+h2#header {
+	margin: 10px 0 20px 0;
+	font-size: 24px;
+}
+#sections {
+	width: 950px;
+}
+#sections h3 {
+	text-align: left;
+}
+
+.sectionTable th {
+	text-align: right;
+	vertical-align: top;
+	padding: 3px 20px 0 0;
+}
+.sectionTable td {
+	width: 500px;
+	padding-bottom: 5px;
+}
+.sectionTable td input, .sectionTable td textarea, .sectionTable td select {
+	width: 100%;
+	font-size: 16px;
+	padding: 3px;
+}
+#infoSection td select#status {
+	width: 150px;
+}
+#infoSection td input#needsWorkFalse, #infoSection td input#needsWorkTrue {
+	width: auto;
+}
+#infoSection td textarea#notes {
+	height: 150px;
+	padding: 4px;
+}
+#infoSection td ul#photosSections li.row {
+	background: #ffffff;
+	border: 1px solid #ffffff;
+}
+#infoSection td ul#photosSections li.row .moveHandle {
+	position: absolute;
+	margin: 8px 0 0 -3px;
+}
+#infoSection td ul#photosSections li.row .delete {
+	width: 20px;
+	height: 18px;
+}
+#infoSection td ul#photosSections input.label {
+	width: 250px;
+	margin-left: 20px;
+}
+#infoSection td ul#photosSections input.filename {
+	width: 100px;
+}
+#infoSection td ul#photosSections input.count {
+	width: 25px;
+}
+#infoSection td div#addPhotosSection, #infoSection td div#addPhotosSectionGetImages {
+	font-size: 12px;
+	margin: 5px 0 5px 0;
+}
+#detailSection td {
+	width: 100px;
+	height: 30px;
+}
+#detailSection td input, #detailSection td select {
+	width: 90%;
+	font-size: 16px;
+	padding: 3px;
+}
+#detailSection td.radioButtons, .soldTable td.radioButtons {
+	height: 30px;
+	padding: 3px 20px 0 0;
+}
+#detailSection td input.offset {
+	width: 40%;
+}
+#detailSection td input.tire_depth {
+	width: 25%;
+}
+#detailSection td span.tiny {
+	font-size: 10px;
+}
+#detailSection td input.radioButton, .soldTable td input.radioButton {
+	width: 20px;
+	margin-left: 0;
+}
+textarea#description {
+	width: 700px;
+	height: 300px;
+}
+#boughtSection td textarea#bought_address {
+	height: 70px;
+	padding: 4px;
+}
+#shippingInfo td {
+	padding: 0 5px 0 5px;
+	width: auto;
+}
+#shippingInfo td input.shipText {
+	width: 40px;
+}
+#soldSection #addSold {
+	width: 100px;
+	padding: 7px 0;
+}
+#addSoldDialog #addSoldId {
+	margin: 10px 0 5px 0;
+}
+.soldTable th {
+	text-align: right;
+	vertical-align: top;
+	padding: 3px 20px 0 0;
+}
+.soldTable td {
+	width: 300px;
+	padding-bottom: 5px;
+}
+.soldTable td textarea#sold_address {
+	height: 170px;
+	padding: 4px;
+}
+
+div.saveButton {
+	text-align: center;
+	vertical-align: bottom;
+	margin-top: 10px;
+}
+div.saveButton input {
+	width: 100px;
+	padding: 7px 0;
+	margin-left: 80px;
+}
+div.saveButton img {
+	vertical-align: bottom;
+	margin: 0 0 5px 10px;
+}

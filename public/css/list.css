@@ -1,0 +1,65 @@
+div#menuOptions {
+	margin: 10px auto 10px auto;
+	width: 1050px;
+	height: 40px;
+	text-align: left;
+}
+div#menuOptions a {
+	font-size: 12px;
+}
+div#menuOptions select {
+	padding: 2px;
+}
+#wheelList tr td {
+	padding: 5px;
+}
+#wheelList tr#topButtons {
+	height: 60px;
+}
+#wheelList tr.status-6 { /* Sold */
+	display: none;
+}
+#wheelList tr.status-6, #wheelList tr.status-6 a { /* Sold */
+	color: #888888;
+}
+
+#wheelList .wheelActions {
+	width: 60px;
+}
+#wheelList .wheelActions input {
+	padding: 3px;
+	font-size: 11px;
+}
+#wheelList .wheelStatus {
+	width: 150px;
+}
+#wheelList .wheelId {
+	width: 50px;
+}
+#wheelList .wheelName {
+	width: 350px;
+}
+#wheelList .wheelId a, #wheelList .wheelName a {
+	text-decoration: none;
+}
+#wheelList .wheelTitle {
+	width: 370px;
+}
+#wheelList .wheelTitle .title {
+	font-size: 14px;
+	line-height: 150%;
+}
+#wheelList .wheelTitle .subtitle {
+	font-size: 11px;
+	line-height: 150%;
+}
+
+#addNewTable th {
+	text-align: right;
+	vertical-align: top;
+	padding: 3px 20px 0 30px;
+}
+#addNewTable td {
+	width: 200px;
+	padding-bottom: 5px;
+}

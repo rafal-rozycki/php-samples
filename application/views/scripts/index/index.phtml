@@ -1,0 +1,78 @@
+<?php
+	$this->headScript()->appendFile($this->baseUrl('/js/list.js'));
+	$this->headLink()->appendStylesheet($this->baseUrl('/css/list.css'));
+	$this->showNewLink = true;
+?>
+
+<input type="hidden" id="editUrl" value="<?= $this->url(array('controller' => 'wheel', 'action' => 'edit'), 'default', true) ?>" />
+
+<div id="menuOptions">
+	<?php /* ?>
+	<a href="#" id="toggleSold">Toggle Sold</a>
+	<?php */ ?>
+	<select id="filterStatus">
+		<option value="all">All</option>
+		<?php
+			foreach(Utilities::getStatuses() as $status => $statusDescription) {
+				echo '<option value="' . $status . '"' . $selected . '>' . $statusDescription . '</option>';
+			}
+		?>
+		<option value="" disabled="disabled">-----</option>
+		<option value="0,1,2,3,4,5">Unsold</option>
+		<option value="0,1,2,3,4">Unsold/Unposted</option>
+		<option value="needswork">Needs work</option>
+		</select>
+	<?php /* ?>
+	Needs work only:
+	<input type="checkbox" id="filterNeedsWork" />
+	<?php */ ?>
+</div>
+<table id="wheelList">
+	<?php foreach ($this->wheels as $wheel): ?>
+	<tr class="status-<?=$wheel->getStatus()?> needsWork-<?php if ($wheel->getNeedsWork()) { echo '1'; } else { echo '0'; } ?>">
+		<td class="wheelActions">
+			<a href="<?= Utilities::getWebsiteUrl() . 'description/index/ebay/true/id/' . $wheel->getId(); ?>">view</a>
+			<?php /* ?>
+			<a href="<?= $this->url(array('controller' => 'wheel', 'action' => 'photos', 'id' => $wheel->getId()), 'default', true) ?>">Photos</a>
+			<?php */ ?>
+		</td>
+		<td class="wheelId">
+			<a href="<?= $this->url(array('controller' => 'wheel', 'action' => 'edit', 'id' => $wheel->getId()), 'default', true) ?>">
+				<?= $this->escape($wheel->getId()) ?>
+			</a>
+		</td>
+		<td class="wheelStatus">
+			<?= $this->escape($wheel->getStatusDescription())?>
+			<?php if ($wheel->getNeedsWork()) { ?>
+				<span style="font-size:10px;"><br />[needs work]</span>
+			<?php } ?>
+		</td>
+		<td class="wheelName">
+			<a href="<?= $this->url(array('controller' => 'wheel', 'action' => 'edit', 'id' => $wheel->getId()), 'default', true) ?>">
+				<?= $this->escape($wheel->getName()) ?>
+			</a>
+		</td>
+		<td class="wheelTitle">
+			<div class="title"><?= $this->escape($wheel->getTitle()) ?></div>
+			<div class="subtitle"><?= $this->escape($wheel->getSubtitle()) ?></div>
+		</td>
+	</tr>
+	<?php endforeach ?>
+</table>
+
+<div id="dialogNew" title="Add">
+	<table id="addNewTable">
+		<tr>
+			<th>Name</th>
+			<td><input type="text" id="newName" /></td>
+		</tr>
+		<tr>
+			<th>Date</th>
+			<td><input type="text" id="newDate" value="<?= date('Y-m-d') ?>" /></td>
+		</tr>
+		<tr>
+			<th>Price</th>
+			<td><input type="text" id="newPrice" /></td>
+		</tr>
+	</table>
+</div>

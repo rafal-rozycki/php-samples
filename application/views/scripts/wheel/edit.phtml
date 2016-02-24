@@ -1,0 +1,594 @@
+<?php
+	$this->headTitle('Edit');
+	$this->headScript()->appendFile($this->baseUrl('/js/wheel-edit.js'));
+	$this->headLink()->appendStylesheet($this->baseUrl('/css/wheel-edit.css'));
+	$this->showBackToListLink = true;
+	$this->showDescriptionLink = true;
+
+	if (($this->wheel->getRearDiameter() && $this->wheel->getFrontDiameter() != $this->wheel->getRearDiameter()) ||
+	   (($this->wheel->getRearWidth() && $this->wheel->getFrontWidth() != $this->wheel->getRearWidth()))) {
+		$staggered = true;
+	} else {
+		$staggered = false;
+	}
+	if ($this->wheel->getFrontTireWidth() && $this->wheel->getFrontTireSidewall()) {
+		$hasTires = true;
+	} else {
+		$hasTires = false;
+	}
+	?>
+
+<input type="hidden" id="postUrl" value="<?php echo $this->url(array('controller' => 'wheel', 'action' => 'updateinfo', 'id' => $this->wheel->getId()), 'default', true) ?>" />
+<input type="hidden" id="imageServerUrl" value="<?= Utilities::getImagesUrl() ?>" />
+<input type="hidden" id="imagesUrl" value="<?= $this->baseUrl('/images/') ?>" />
+<input type="hidden" id="wheelId" value="<?= $this->wheel->getId() ?>" />
+
+<h2 id="header"><?= $this->wheel->getId() . ': ' . trim($this->escape($this->wheel->getName())) ?></h2>
+<div id="sections" class="ui-accordion ui-widget ui-helper-reset">
+
+	<h3 class="ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all ui-state-hover"><a href="#">Info</a></h3>
+	<div class="section ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active">
+		<table id="infoSection" class="sectionTable">
+			<tr>
+				<th>Name</th>
+				<td><input type="text" id="name" value="<?= trim($this->escape($this->wheel->getName())) ?>" maxlength="100" /></td>
+			</tr>
+			<tr>
+				<th>Status</th>
+				<td>
+					<select id="status" class="status">
+						<?php
+							foreach(Utilities::getStatuses() as $status => $statusDescription) {
+								$selected = '';
+								if ($this->wheel->getStatus() == $status) {
+									$selected = ' selected="selected"';
+								}
+								echo '<option value="' . $status . '"' . $selected . '>' . $statusDescription . '</option>';
+							}
+						?>
+					</select>
+					<span style="margin-left:50px;">Needs work?</span>
+					<input type="radio" class="radioButton" name="needs_work" id="needsWorkFalse"
+						   value="0" <?php if (!$this->wheel->getNeedsWork()) echo 'checked="checked"'; ?> />
+					<label for="needsWorkFalse">No</label>
+					<input type="radio" class="radioButton" name="needs_work" id="needsWorkTrue"
+						   value="1" <?php if ($this->wheel->getNeedsWork()) echo 'checked="checked"'; ?> />
+					<label for="needsWorkTrue">Yes</label>
+				</td>
+			</tr>
+			<tr>
+				<th>Title</th>
+				<td><input type="text" id="title" value="<?= trim($this->escape($this->wheel->getTitle())) ?>" maxlength="100" /></td>
+			</tr>
+			<tr>
+				<th>Subtitle</th>
+				<td><input type="text" id="subtitle" value="<?= trim($this->escape($this->wheel->getSubtitle())) ?>" maxlength="100" /></td>
+			</tr>
+			<tr>
+				<th>Folder</th>
+				<td><input type="text" id="folder" value="<?= trim($this->escape($this->wheel->getFolder())) ?>" maxlength="50" /></td>
+			</tr>
+			<tr>
+				<th>Photos</th>
+				<td>
+					<input type="hidden" id="photos_array" value="<?= trim($this->escape($this->wheel->getPhotosArray())) ?>" />
+					<ul id="photosSections">
+						<li class="ui-state-default row">
+							<span class="moveHandle ui-icon ui-icon-grip-dotted-horizontal"></span>
+							<input type="text" class="label">
+							<input type="text" class="filename">
+							<input type="text" class="count">
+							<span class="delete"></span>
+						</li>
+					</ul>
+					<div id="addPhotosSectionGetImages">Get Images</div>
+					<div id="addPhotosSection">Add Row</div>
+					</td>
+			</tr>
+			<tr>
+				<th>Photos (old)</th>
+				<td><input type="text" id="photos" value="<?= trim($this->escape($this->wheel->getPhotos())) ?>" maxlength="50" /></td>
+			</tr>
+			<tr>
+				<th>Notes</th>
+				<td><textarea id="notes" rows="4" cols="40" maxlength="500"><?= $this->formatHtml($this->wheel->getNotes()) ?></textarea></td>
+			</tr>
+		</table>
+		<div class="saveButton">
+			<input type="button" value="Save" id="saveInfo" />
+			<img src="<?= $this->baseUrl('/images/ajax-loader-hidden.gif') ?>" />
+		</div>
+	</div>
+
+	<h3 class="ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all ui-state-hover"><a href="#">Detail</a></h3>
+	<div class="section ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active ui-helper-hidden">
+		<table id="detailSection" class="sectionTable">
+			<tr>
+				<th>Staggered?</th>
+				<td colspan="3" class="radioButtons">
+					<input type="radio" class="radioButton" name="staggered" id="staggeredFalse" value="0" <?php if (!$staggered) echo 'checked="checked"'; ?> />
+					<label for="staggeredFalse">No</label>
+					<input type="radio" class="radioButton" name="staggered" id="staggeredTrue" value="1" <?php if ($staggered) echo 'checked="checked"'; ?> />
+					<label for="staggeredTrue">Yes</label>
+				</td>
+			</tr>
+			<tr>
+				<th>Size</th>
+				<td>
+					<select id="front_diameter" class="diameter">
+						<option value="0"></option>
+						<?php
+							foreach(Utilities::getDiameters() as $diameter) {
+								$selected = '';
+								if ($this->wheel->getFrontDiameter() == $diameter) {
+									$selected = ' selected="selected"';
+								}
+								echo '<option value="' . $diameter . '"' . $selected . '>' . $diameter . '</option>';
+							}
+						?>
+					</select>
+				</td>
+				<td>
+					<select id="front_width" class="width">
+						<option value="0"></option>
+						<?php
+							foreach(Utilities::getWidths() as $width) {
+								$selected = '';
+								if ($this->wheel->getFrontWidth() == $width) {
+									$selected = ' selected="selected"';
+								}
+								echo '<option value="' . $width . '"' . $selected . '>' . $width . '</option>';
+							}
+						?>
+					</select>
+				</td>
+				<td style="width:150px;">
+					<input type="number" id="front_offset" class="offset" value="<?= trim($this->escape($this->wheel->getFrontOffset())) ?>" maxlength="4" />
+					<span class="tiny">mm</span>
+				</td>
+			</tr>
+			<tr class="rear" <?php if (!$staggered) echo 'style="display:none;"'; ?>>
+				<th>Rear</th>
+				<td>
+					<select id="rear_diameter" class="diameter">
+						<option value="0"></option>
+						<?php
+							foreach(Utilities::getDiameters() as $diameter) {
+								$selected = '';
+								if ($this->wheel->getRearDiameter() == $diameter) {
+									$selected = ' selected="selected"';
+								}
+								echo '<option value="' . $diameter . '"' . $selected . '>' . $diameter . '</option>';
+							}
+						?>
+					</select>
+				</td>
+				<td>
+					<select id="rear_width" class="width">
+						<option value="0"></option>
+						<?php
+							foreach(Utilities::getWidths() as $width) {
+								$selected = '';
+								if ($this->wheel->getRearWidth() == $width) {
+									$selected = ' selected="selected"';
+								}
+								echo '<option value="' . $width . '"' . $selected . '>' . $width . '</option>';
+							}
+						?>
+					</select>
+				</td>
+				<td>
+					<input type="number" id="rear_offset" class="offset" value="<?= trim($this->escape($this->wheel->getRearOffset())) ?>" maxlength="4" />
+					<span class="tiny">mm</span>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="4" style="height:2px;"><hr /></td>
+			</tr>
+			<tr>
+				<th>Tires?</th>
+				<td colspan="3" class="radioButtons">
+					<input type="radio" class="radioButton" name="hasTires" id="hasTiresFalse" value="0" <?php if (!$hasTires) echo 'checked="checked"'; ?> />
+					<label for="hasTiresFalse">No</label>
+					<input type="radio" class="radioButton" name="hasTires" id="hasTiresTrue" value="1" <?php if ($hasTires) echo 'checked="checked"'; ?> />
+					<label for="hasTiresTrue">Yes</label>
+				</td>
+			</tr>
+			
+			<tr class="tires" <?php if (!$hasTires) echo 'style="display:none;"'; ?>>
+				<th>Width</th>
+				<td>
+					<select id="front_tire_width" class="tire_width">
+						<option value="0"></option>
+						<?php
+							foreach(Utilities::getTireWidths() as $tireWidth) {
+								$selected = '';
+								if ($this->wheel->getFrontTireWidth() == $tireWidth) {
+									$selected = ' selected="selected"';
+								}
+								echo '<option value="' . $tireWidth . '"' . $selected . '>' . $tireWidth . '</option>';
+							}
+						?>
+					</select>
+				</td>
+				<td>
+					<select id="front_tire_sidewall" class="tire_sidewall">
+						<option value="0"></option>
+						<?php
+							foreach(Utilities::getTireSidewalls() as $tireSidewall) {
+								$selected = '';
+								if ($this->wheel->getFrontTireSidewall() == $tireSidewall) {
+									$selected = ' selected="selected"';
+								}
+								echo '<option value="' . $tireSidewall . '"' . $selected . '>' . $tireSidewall . '</option>';
+							}
+						?>
+					</select>
+				</td>
+				<td>
+					<input type="number" id="front_tire_depth" class="tire_depth"
+						   value="<?= trim($this->escape($this->wheel->getFrontTireDepth())) ?>" maxlength="4" />
+					<span class="tiny">/32</span>
+					<input type="number" id="front_tire_depth_percent" class="tire_depth"
+						   value="<?= trim($this->escape($this->wheel->getFrontTireDepthPercent())) ?>" maxlength="4" />
+					<span class="tiny">%</span>
+				</td>
+			</tr>			
+			<tr class="tires rear" <?php if (!$hasTires) echo 'style="display:none;"'; ?>>
+				<th>Rear</th>
+				<td>
+					<select id="rear_tire_width" class="tire_width">
+						<option value="0"></option>
+						<?php
+							foreach(Utilities::getTireWidths() as $tireWidth) {
+								$selected = '';
+								if ($this->wheel->getRearTireWidth() == $tireWidth) {
+									$selected = ' selected="selected"';
+								}
+								echo '<option value="' . $tireWidth . '"' . $selected . '>' . $tireWidth . '</option>';
+							}
+						?>
+					</select>
+				</td>
+				<td>
+					<select id="rear_tire_sidewall" class="tire_sidewall">
+						<option value="0"></option>
+						<?php
+							foreach(Utilities::getTireSidewalls() as $tireSidewall) {
+								$selected = '';
+								if ($this->wheel->getRearTireSidewall() == $tireSidewall) {
+									$selected = ' selected="selected"';
+								}
+								echo '<option value="' . $tireSidewall . '"' . $selected . '>' . $tireSidewall . '</option>';
+							}
+						?>
+					</select>
+				</td>
+				<td>
+					<input type="number" id="rear_tire_depth" class="tire_depth"
+						   value="<?= trim($this->escape($this->wheel->getRearTireDepth())) ?>" maxlength="4" />
+					<span class="tiny">/32</span>
+					<input type="number" id="rear_tire_depth_percent" class="tire_depth"
+						   value="<?= trim($this->escape($this->wheel->getRearTireDepthPercent())) ?>" maxlength="4" />
+					<span class="tiny">%</span>
+				</td>
+			</tr>
+			<tr class="tires">
+				<th>Description</th>
+				<td colspan="3">
+					<input type="text" id="tire_description" style="width:97%;" value="<?= trim($this->escape($this->wheel->getTireDescription())) ?>" maxlength="100" />
+				</td>
+			</tr>
+			<tr class="tires">
+				<th>Dates</th>
+				<td colspan="3">
+					<input type="text" id="tire_production_dates" style="width:97%;" value="<?= trim($this->escape($this->wheel->getTireProductionDates())) ?>" maxlength="50" />
+				</td>
+			</tr>
+			<tr class="tires">
+				<th>Mileage</th>
+				<td colspan="3">
+					<input type="number" id="mileage" style="width:97%;" value="<?= trim($this->escape($this->wheel->getMileage())) ?>" maxlength="6" />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="4" style="height:2px;"><hr /></td>
+			</tr>
+			<tr>
+				<th>Bolt Pattern</th>
+				<td colspan="3">
+					<select id="bolt_pattern" style="width:50%;">
+						<option value="0"></option>
+						<?php
+							foreach(Utilities::getBoltPatterns() as $id => $description) {
+								$selected = '';
+								if ($this->wheel->getBoltPattern() == $id) {
+									$selected = ' selected="selected"';
+								}
+								echo '<option value="' . $id . '"' . $selected . '>' . $description . '</option>';
+							}
+						?>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th>Part #/Hollander</th>
+				<td colspan="3">
+					<input type="text" id="part_number" style="width:45%;"
+						   value="<?= trim($this->escape($this->wheel->getPartNumber())) ?>" maxlength="50" />
+					<input type="text" id="part_number_hollander" style="width:45%;"
+						   value="<?= trim($this->escape($this->wheel->getPartNumberHollander())) ?>" maxlength="50" />
+				</td>
+			</tr>
+			<tr class="rear">
+				<th>Rear</th>
+				<td colspan="3">
+					<input type="text" id="part_number_rear" style="width:45%;"
+						   value="<?= trim($this->escape($this->wheel->getPartNumberRear())) ?>" maxlength="50" />
+					<input type="text" id="part_number_hollander_rear" style="width:45%;"
+						   value="<?= trim($this->escape($this->wheel->getPartNumberHollanderRear())) ?>" maxlength="50" />
+				</td>
+			</tr>						
+			<tr>
+				<th>TPMS?</th>
+				<td colspan="3" class="radioButtons">
+					<input type="radio" class="radioButton" name="tpms" id="tpmsFalse" value="0" <?php if (!$this->wheel->getTpms()) echo 'checked="checked"'; ?> />
+					<label for="tpmsFalse">No</label>
+					<input type="radio" class="radioButton" name="tpms" id="tpmsTrue" value="1" <?php if ($this->wheel->getTpms()) echo 'checked="checked"'; ?> />
+					<label for="tpmsTrue">Yes</label>
+				</td>
+			</tr>
+			<tr>
+				<th>Center Caps?</th>
+				<td colspan="3" class="radioButtons">
+					<input type="radio" class="radioButton" name="center_caps" id="center_capsFalse" value="0" <?php if (!$this->wheel->getCenterCaps()) echo 'checked="checked"'; ?> />
+					<label for="center_capsFalse">No</label>
+					<input type="radio" class="radioButton" name="center_caps" id="center_capsTrue" value="1" <?php if ($this->wheel->getCenterCaps()) echo 'checked="checked"'; ?> />
+					<label for="center_capsTrue">Yes</label>
+				</td>
+			</tr>
+		</table>
+		<div class="saveButton">
+			<input type="button" value="Save" id="saveDetail" />
+			<img src="<?= $this->baseUrl('/images/ajax-loader-hidden.gif') ?>" />
+		</div>
+	</div>
+
+	<h3 class="ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all ui-state-hover"><a href="#">Description</a></h3>
+	<div class="section ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active ui-helper-hidden">
+		<textarea id="description" rows="10" cols="40" maxlength="20000"><?= $this->formatHtml($this->wheel->getDescription()) ?></textarea>
+		<div class="saveButton">
+			<input type="button" value="Save" id="saveDescription" />
+			<img src="<?= $this->baseUrl('/images/ajax-loader-hidden.gif') ?>" />
+		</div>
+	</div>
+
+	<h3 class="ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all ui-state-hover"><a href="#">Bought</a></h3>
+	<div class="section ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active ui-helper-hidden">
+		<table id="boughtSection" class="sectionTable">
+			<tr>
+				<th>Date</th>
+				<td><input type="text" id="bought_date" value="<?= trim($this->escape($this->wheel->getBoughtDate())) ?>" maxlength="10" /></td>
+			</tr>
+			<tr>
+				<th>Price</th>
+				<td><input type="text" id="bought_price" value="<?= trim($this->escape(number_format($this->wheel->getBoughtPrice(), 2, '.', ''))) ?>" maxlength="10" /></td>
+			</tr>
+			<tr>
+				<th>Name</th>
+				<td><input type="text" id="bought_name" value="<?= trim($this->escape($this->wheel->getBoughtName())) ?>" maxlength="100" /></td>
+			</tr>
+			<tr>
+				<th>Email</th>
+				<td><input type="text" id="bought_email" value="<?= trim($this->escape($this->wheel->getBoughtEmail())) ?>" maxlength="100" /></td>
+			</tr>
+			<tr>
+				<th>Address</th>
+				<td><textarea id="bought_address" rows="2" cols="40" maxlength="100"><?= $this->formatHtml($this->wheel->getBoughtAddress()) ?></textarea></td>
+			</tr>
+			<tr>
+				<th>Phone</th>
+				<td><input type="text" id="bought_phone" value="<?= trim($this->escape($this->wheel->getBoughtPhone())) ?>" maxlength="50" /></td>
+			</tr>
+		</table>
+		<div class="saveButton">
+			<input type="button" value="Save" id="saveBought" />
+			<img src="<?= $this->baseUrl('/images/ajax-loader-hidden.gif') ?>" />
+		</div>
+	</div>
+
+	<h3 class="ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all ui-state-hover"><a href="#">Sold/Ship</a></h3>
+	<div class="section ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active ui-helper-hidden">
+		<table id="soldSection" class="sectionTable">
+			<tr>
+				<th>Shipping Info</th>
+				<td>
+					<table id="shippingInfo">
+						<tr>
+							<td style="padding-right:50px;"><input type="number" class="shipText" id="ship_weight" value="<?= trim($this->escape($this->wheel->getShipWeight())) ?>" maxlength="4" /> lbs</td>
+							<td><input type="number" class="shipText" id="ship_length" value="<?= trim($this->escape($this->wheel->getShipLength())) ?>" maxlength="4" /> x</td>
+							<td><input type="number" class="shipText" id="ship_width" value="<?= trim($this->escape($this->wheel->getShipWidth())) ?>" maxlength="4" /> x</td>
+							<td><input type="number" class="shipText" id="ship_height" value="<?= trim($this->escape($this->wheel->getShipHeight())) ?>" maxlength="4" /> (L x W x H)</td>
+						</tr>
+						<tr>
+							<td colspan="4">
+								<div class="saveButton">
+									<input type="button" value="Save" id="saveShip" style="margin-left:0;" />
+									<img src="<?= $this->baseUrl('/images/ajax-loader-hidden.gif') ?>" />
+								</div>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2"><input type="button" value="Add Sold" id="addSold" /></td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div id="soldSingles">
+						<?php
+							foreach ($this->wheel->getWheelsSold() as $wheelSold) {
+								echo "<h3><a href=\"#\">";
+								if ($wheelSold->getSoldSingle() == 0) {
+									echo "Set";
+								} else {
+									echo "Wheel " . $wheelSold->getSoldSingle();
+								}
+								echo "</a></h3>";
+						?>
+						<div>
+							<table class="sectionTable soldTable">
+								<tr>
+									<th>Date</th>
+									<td>
+										<input type="text" id="sold_date-<?= $wheelSold->getSoldSingle() ?>"
+											   value="<?= trim($this->escape($wheelSold->getSoldDate())) ?>" maxlength="10" />
+									</td>
+								</tr>
+								<tr>
+									<th>Price</th>
+									<td>
+										<input type="text" id="sold_price-<?= $wheelSold->getSoldSingle() ?>"
+											   value="<?= trim($this->escape(number_format($wheelSold->getSoldPrice(), 2, '.', ''))) ?>" maxlength="10" />
+									</td>
+								</tr>
+								<tr>
+									<th>Name</th>
+									<td>
+										<input type="text" id="sold_name-<?= $wheelSold->getSoldSingle() ?>"
+											   value="<?= trim($this->escape($wheelSold->getSoldName())) ?>" maxlength="100" />
+									</td>
+								</tr>
+								<tr>
+									<th>Email</th>
+									<td>
+										<input type="text" id="sold_email-<?= $wheelSold->getSoldSingle() ?>"
+											   value="<?= trim($this->escape($wheelSold->getSoldEmail())) ?>" maxlength="100" />
+									</td>
+								</tr>
+								<tr>
+									<th>Address</th>
+									<td>
+										<textarea id="sold_address-<?= $wheelSold->getSoldSingle() ?>" rows="2" cols="40" maxlength="100"><?= $this->formatHtml($wheelSold->getSoldAddress()) ?></textarea>
+									</td>
+								</tr>
+								<tr>
+									<th>Phone</th>
+									<td>
+										<input type="text" id="sold_phone-<?= $wheelSold->getSoldSingle() ?>"
+											   value="<?= trim($this->escape($wheelSold->getSoldPhone())) ?>" maxlength="50" />
+									</td>
+								</tr>
+								<tr>
+									<th>Sale Type</th>
+									<td>
+										<select id="sold_sale_type-<?= $wheelSold->getSoldSingle() ?>">
+											<?php
+												foreach(Utilities::getSaleTypes() as $id => $description) {
+													$selected = '';
+													if ($wheelSold->getSoldSaleType() == $id) {
+														$selected = ' selected="selected"';
+													}
+													echo '<option value="' . $id . '"' . $selected . '>' . $description . '</option>';
+												}
+											?>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<th>PayPal Fees</th>
+									<td>
+										<input type="text" id="sold_paypal_fees-<?= $wheelSold->getSoldSingle() ?>"
+											   value="<?= trim($this->escape(number_format($wheelSold->getSoldPaypalFees(), 2, '.', ''))) ?>" maxlength="10" />
+									</td>
+								</tr>
+								<tr>
+									<th>Transaction ID</th>
+									<td>
+										<input type="text" id="sold_paypal_transaction_id-<?= $wheelSold->getSoldSingle() ?>"
+											   value="<?= trim($this->escape($wheelSold->getSoldPaypalTransactionId())) ?>" maxlength="50" />
+									</td>
+								</tr>
+								<tr class="soldeBayRow-<?= $wheelSold->getSoldSingle() ?>">
+									<th>eBay ID</th>
+									<td>
+										<input type="text" id="sold_ebay_id-<?= $wheelSold->getSoldSingle() ?>"
+											   value="<?= trim($this->escape($wheelSold->getSoldEbayId())) ?>" maxlength="100" />
+									</td>
+								</tr>
+								<tr class="soldeBayRow-<?= $wheelSold->getSoldSingle() ?>">
+									<th>eBay Listing #</th>
+									<td>
+										<input type="number" id="sold_ebay_auction_id-<?= $wheelSold->getSoldSingle() ?>"
+											   value="<?= trim($this->escape($wheelSold->getSoldEbayAuctionId())) ?>" maxlength="50" />
+									</td>
+								</tr>
+								<tr class="soldeBayRow-<?= $wheelSold->getSoldSingle() ?>">
+									<th>eBay Fees</th>
+									<td>
+										<input type="text" id="sold_ebay_fees-<?= $wheelSold->getSoldSingle() ?>"
+											   value="<?= trim($this->escape(number_format($wheelSold->getSoldEbayFees(), 2, '.', ''))) ?>" maxlength="10" />
+									</td>
+								</tr>
+								<tr class="soldeBayRow-<?= $wheelSold->getSoldSingle() ?>">
+									<th>Verify</th>
+									<td class="radioButtons">
+										<input type="radio" class="radioButton" name="sold_ebay_fees_verify-<?= $wheelSold->getSoldSingle() ?>"
+											   id="sold_ebay_fees_verify-<?= $wheelSold->getSoldSingle() ?>False"
+											   value="0" <?php if (!$wheelSold->getSoldEbayFeesVerify()) echo 'checked="checked"'; ?> />
+										<label for="sold_ebay_fees_verify-<?= $wheelSold->getSoldSingle() ?>False">No</label>
+										<input type="radio" class="radioButton" name="sold_ebay_fees_verify-<?= $wheelSold->getSoldSingle() ?>"
+											   id="sold_ebay_fees_verify-<?= $wheelSold->getSoldSingle() ?>True"
+											   value="1" <?php if ($wheelSold->getSoldEbayFeesVerify()) echo 'checked="checked"'; ?> />
+										<label for="sold_ebay_fees_verify-<?= $wheelSold->getSoldSingle() ?>True">Yes</label>
+									</td>
+								</tr>
+								<tr>
+									<th>Shipping Cost</th>
+									<td>
+										<input type="text" id="sold_shipping_cost-<?= $wheelSold->getSoldSingle() ?>"
+											   value="<?= trim($this->escape(number_format($wheelSold->getSoldShippingCost(), 2, '.', ''))) ?>" maxlength="10" />
+									</td>
+								</tr>
+								<tr>
+									<th>Verify</th>
+									<td class="radioButtons">
+										<input type="radio" class="radioButton" name="sold_shipping_cost_verify-<?= $wheelSold->getSoldSingle() ?>"
+											   id="sold_shipping_cost_verify-<?= $wheelSold->getSoldSingle() ?>False"
+											   value="0" <?php if (!$wheelSold->getSoldShippingCostVerify()) echo 'checked="checked"'; ?> />
+										<label for="sold_shipping_cost_verify-<?= $wheelSold->getSoldSingle() ?>False">No</label>
+										<input type="radio" class="radioButton" name="sold_shipping_cost_verify-<?= $wheelSold->getSoldSingle() ?>"
+											   id="sold_shipping_cost_verify-<?= $wheelSold->getSoldSingle() ?>True"
+											   value="1" <?php if ($wheelSold->getSoldShippingCostVerify()) echo 'checked="checked"'; ?> />
+										<label for="sold_shipping_cost_verify-<?= $wheelSold->getSoldSingle() ?>True">Yes</label>
+									</td>
+								</tr>
+								<tr>
+									<th>Tracking Info</th>
+									<td>
+										<input type="text" id="sold_tracking_info-<?= $wheelSold->getSoldSingle() ?>"
+											   value="<?= trim($this->escape($wheelSold->getSoldTrackingInfo())) ?>" maxlength="100" />
+									</td>
+								</tr>
+							</table>
+						</div>
+						<?php } ?>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+</div>
+
+<div id="addSoldDialog" title="Add Sold" style="display:none;text-align:center;">
+	<select id="addSoldId">
+		<option value="0">Set</option>
+		<?php
+			for ($i = 1; $i <= 5; $i++) {
+				echo '<option value="' . $i . '">Wheel ' . $i . '</option>';
+			}
+		?>
+	</select>
+</div>

@@ -1,0 +1,62 @@
+<?php echo $this->doctype() ?>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<?php
+			$this->headTitle('Factory Wheels Admin')->setSeparator(' - ');
+			$this->headMeta()
+				 ->appendHttpEquiv('content-type', 'text/html; charset=utf-8')
+				 ->appendHttpEquiv('content-language', 'en-us')
+				 ->appendName('description', 'Buy factory, stock, OEM wheels online')
+				 ->appendName('keywords', 'Wheels, Rims, Factory, Stock, OEM, Buy online');
+			$this->headScript()
+				 ->prependFile($this->baseUrl('/js/global.js'))
+				 ->prependFile('https://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js')
+				 ->prependFile('https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js');
+			$this->headLink()
+				 ->prependStylesheet($this->baseUrl('/css/global.css'))
+				 ->prependStylesheet('https://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/smoothness/jquery-ui.css')
+				 ->prependStylesheet($this->baseUrl('/css/reset.css'));
+			echo $this->headTitle();
+			echo $this->headMeta();
+			echo $this->headScript();
+			echo $this->headLink();
+		 ?>
+	</head>
+	<body>
+	<div id="bodyWrapper">
+		<div id="header">
+			<div id="left">
+				<?php
+					if ($this->showNewLink) {
+						echo '<a href="' . $this->url(array('controller' => 'wheel', 'action' => 'new'), 'default', true) . '" id="new">New</a>';
+					}
+				?>
+				<?php
+					if ($this->showBackToListLink) {
+						echo '<a href="' . $this->baseUrl('/') . '" id="backToList">Back</a>';
+					}
+				?>
+				<?php
+					if ($this->showDescriptionLink) {
+						echo '<a href="' . Utilities::getWebsiteUrl() . 'description/index/ebay/true/id/' . $this->wheel->getId() . '" id="view">View</a>';
+					}
+				?>
+			</div>
+			<div id="right">
+				<?php
+					if (!$this->hideLogoutLink) {
+						echo '<a href="' . $this->url(array('controller'=>'auth', 'action'=>'logout'), null, true) . '" id="logout">Logout</a>';
+					}
+				?>
+			</div>
+		</div>
+		<div id="body" class="alignCenter">
+			<?= $this->layout()->content ?>
+		</div>
+		<div id="footer" class="alignCenter">
+			Copyright &copy; 2010-<?= date('Y'); ?> Factory Wheels - All Rights Reserved.
+		</div>
+	</div>
+	<input type="hidden" name="<?= getenv('APPLICATION_ENV') ?>" value="" />
+	</body>
+</html>
